@@ -359,5 +359,3 @@ function handle_comment_attachment()
         }
     }
 }
-
-define('__TYPECHO_DEBUG__', true);
