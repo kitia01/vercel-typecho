@@ -204,7 +204,30 @@ function getAdjacentArticle($widget, $direction = 'prev')
  */
 function get_post_view($archive)
 {
-    echo 0;
+    $db = Typecho_Db::get();
+    $cid = $archive->cid;
+    if (!array_key_exists('views', $db->fetchRow($db->select()->from('table.contents')))) {
+        try {
+            $db->query('ALTER TABLE "' . $db->getPrefix() . 'contents" ADD COLUMN "views" INTEGER DEFAULT 0;');
+        } catch (Exception $e) {
+            // 字段已存在时忽略错误
+        }
+    }
+    $exist = $db->fetchRow($db->select('views')->from('table.contents')->where('cid = ?', $cid))['views'];
+    if ($archive->is('single')) {
+        $cookie = Typecho_Cookie::get('contents_views');
+        $cookie = $cookie ? explode(',', $cookie) : array();
+        if (!in_array($cid, $cookie)) {
+            $db->query($db->update('table.contents')
+                ->rows(array('views' => (int)$exist + 1))
+                ->where('cid = ?', $cid));
+            $exist = (int)$exist + 1;
+            array_push($cookie, $cid);
+            $cookie = implode(',', $cookie);
+            Typecho_Cookie::set('contents_views', $cookie);
+        }
+    }
+    echo $exist;
 }
 
 /**
@@ -336,5 +359,3 @@ function handle_comment_attachment()
         }
     }
 }
-
-define('__TYPECHO_DEBUG__', true);
