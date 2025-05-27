@@ -204,49 +204,7 @@ function getAdjacentArticle($widget, $direction = 'prev')
  */
 function get_post_view($archive)
 {
-    $db = Typecho_Db::get();
-    $cid = $archive->cid;
-    
-    try {
-        // 检查字段是否存在
-        $checkColumn = $db->fetchRow($db->query("SELECT column_name FROM information_schema.columns 
-            WHERE table_name = '" . $db->getPrefix() . "contents' AND column_name = 'views'"));
-            
-        if (!$checkColumn) {
-            // 如果字段不存在，添加字段
-            $db->query('ALTER TABLE "' . $db->getPrefix() . 'contents" ADD COLUMN "views" INTEGER DEFAULT 0');
-        }
-        
-        // 获取当前阅读次数
-        $result = $db->fetchRow($db->select('views')->from('table.contents')->where('cid = ?', $cid));
-        $exist = isset($result['views']) ? (int)$result['views'] : 0;
-        
-        // 如果是单篇文章页面，增加阅读次数
-        if ($archive->is('single')) {
-            $cookie = Typecho_Cookie::get('contents_views');
-            $cookie = $cookie ? explode(',', $cookie) : array();
-            
-            if (!in_array($cid, $cookie)) {
-                // 更新阅读次数
-                $db->query($db->update('table.contents')
-                    ->rows(array('views' => $exist + 1))
-                    ->where('cid = ?', $cid));
-                    
-                $exist = $exist + 1;
-                
-                // 更新cookie
-                array_push($cookie, $cid);
-                $cookie = implode(',', $cookie);
-                Typecho_Cookie::set('contents_views', $cookie);
-            }
-        }
-        
-        echo $exist;
-        
-    } catch (Exception $e) {
-        // 如果发生错误，返回0
-        echo 10000;
-    }
+    echo 0;
 }
 
 /**

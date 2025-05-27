@@ -245,7 +245,7 @@ function get_post_view($archive)
         
     } catch (Exception $e) {
         // 如果发生错误，返回0
-        echo 10000;
+        echo 0;
     }
 }
 
