@@ -185,12 +185,10 @@ function getAdjacentArticle($widget, $direction = 'prev')
 
     if ($content) {
         // 使用 Typecho_Router 来生成 permalink
-        $siteUrl = isset($widget->options->siteUrl) ? $widget->options->siteUrl : '';
-        $index = isset($widget->options->index) ? $widget->options->index : '';
         $content['permalink'] = Typecho_Router::url('post', array(
             'cid' => $content['cid'],
             'slug' => $content['slug']
-        ), Typecho_Common::url($index, $siteUrl));
+        ), Typecho_Common::url($widget->options->index, $widget->options->siteUrl));
 
         return ['url' => $content['permalink'], 'title' => $content['title']];
     } else {
